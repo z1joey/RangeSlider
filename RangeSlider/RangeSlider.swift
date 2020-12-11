@@ -9,16 +9,23 @@
 import UIKit
 
 class RangeSlider: UIView, NibLoadable {
-    @IBOutlet weak var trackView: UIView!
+    @IBOutlet weak var untrackView: UIView!
     @IBOutlet weak var leftThumb: UIView!
     @IBOutlet weak var rightThumb: UIView!
 
-    @IBOutlet weak var leftThumbLeading: NSLayoutConstraint!
+    var trackView: UIView = UIView()
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         loadFromNib(owner: self)
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
         backgroundColor = .clear
+        trackView.backgroundColor = .green
+        trackView.frame = untrackView.bounds
+        untrackView.addSubview(trackView)
     }
 
     @IBAction func handleLeftThumbPan(_ gesture: UIPanGestureRecognizer) {
@@ -35,6 +42,7 @@ class RangeSlider: UIView, NibLoadable {
                 max(min(min(targetX, (rightThumb.center.x - rightThumb.frame.width)), (bounds.width - leftThumb.bounds.width/2)), leftThumb.frame.width/2)
             let newCenter = CGPoint(x: finalX, y: leftThumb.center.y)
             leftThumb.center = newCenter
+            trackView.frame = CGRect(x: leftThumb.center.x, y: 0, width: rightThumb.center.x - leftThumb.center.x, height: untrackView.frame.height)
             gesture.setTranslation(.zero, in: self)
         case .cancelled, .ended:
             print("finished")
@@ -59,6 +67,7 @@ class RangeSlider: UIView, NibLoadable {
                 max(min(max(targetX, (leftThumb.center.x + leftThumb.frame.width)), (bounds.width - leftThumb.bounds.width/2)), leftThumb.frame.width/2)
             let newCenter = CGPoint(x: finalX, y: leftThumb.center.y)
             rightThumb.center = newCenter
+            trackView.frame = CGRect(x: leftThumb.center.x, y: 0, width: rightThumb.center.x - leftThumb.center.x, height: untrackView.frame.height)
             gesture.setTranslation(.zero, in: self)
         case .cancelled, .ended:
             print("finished")
