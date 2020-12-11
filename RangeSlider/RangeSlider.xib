@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097.3" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="RangeSlider" customModule="RangeSlider" customModuleProvider="target">
+            <connections>
+                <outlet property="leftThumb" destination="lub-2g-RWR" id="4ae-4h-Znx"/>
+                <outlet property="leftThumbLeading" destination="4GG-ig-Vqx" id="4fM-yY-u4N"/>
+                <outlet property="rightThumb" destination="Cfx-8a-7Ij" id="QbL-w4-XeK"/>
+                <outlet property="trackView" destination="0fC-je-n7V" id="ABX-mn-R4a"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="414" height="200"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0fC-je-n7V" userLabel="track">
+                    <rect key="frame" x="0.0" y="95" width="414" height="10"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="10" id="ozh-os-hD1"/>
+                    </constraints>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                            <integer key="value" value="5"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Cfx-8a-7Ij" userLabel="rightThumb">
+                    <rect key="frame" x="384" y="85" width="30" height="30"/>
+                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <gestureRecognizers/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="30" id="Nqv-P4-2c4"/>
+                        <constraint firstAttribute="width" constant="30" id="mn4-yc-nPu"/>
+                    </constraints>
+                    <viewLayoutGuide key="safeArea" id="CEi-gw-Iwc"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                            <integer key="value" value="15"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                    <connections>
+                        <outletCollection property="gestureRecognizers" destination="hUV-cf-RCO" appends="YES" id="7LW-Hk-LwR"/>
+                    </connections>
+                </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lub-2g-RWR" userLabel="leftThumb">
+                    <rect key="frame" x="0.0" y="85" width="30" height="30"/>
+                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <gestureRecognizers/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="30" id="5n5-5e-RNc"/>
+                        <constraint firstAttribute="width" constant="30" id="Qcp-5c-hL9"/>
+                    </constraints>
+                    <viewLayoutGuide key="safeArea" id="LCB-xq-LH6"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                            <integer key="value" value="15"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                    <connections>
+                        <outletCollection property="gestureRecognizers" destination="HbN-f1-gAS" appends="YES" id="GdH-CB-lrQ"/>
+                    </connections>
+                </view>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="Cfx-8a-7Ij" firstAttribute="trailing" secondItem="0fC-je-n7V" secondAttribute="trailing" id="2YY-FS-SOj"/>
+                <constraint firstItem="lub-2g-RWR" firstAttribute="leading" secondItem="0fC-je-n7V" secondAttribute="leading" id="4GG-ig-Vqx"/>
+                <constraint firstItem="0fC-je-n7V" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="89d-sW-xKO"/>
+                <constraint firstItem="lub-2g-RWR" firstAttribute="centerY" secondItem="0fC-je-n7V" secondAttribute="centerY" id="Jwm-gR-9iB"/>
+                <constraint firstItem="0fC-je-n7V" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="O4u-Yy-1I7"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="0fC-je-n7V" secondAttribute="trailing" id="gdX-uR-q5O"/>
+                <constraint firstItem="Cfx-8a-7Ij" firstAttribute="centerY" secondItem="0fC-je-n7V" secondAttribute="centerY" id="rwA-ik-6Kg"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <point key="canvasLocation" x="133" y="154"/>
+        </view>
+        <panGestureRecognizer minimumNumberOfTouches="1" id="HbN-f1-gAS">
+            <connections>
+                <action selector="handleLeftThumbPan:" destination="-1" id="4tg-AX-xzM"/>
+            </connections>
+        </panGestureRecognizer>
+        <panGestureRecognizer minimumNumberOfTouches="1" id="hUV-cf-RCO">
+            <connections>
+                <action selector="handleRightThumbPan:" destination="-1" id="tlu-Hb-9fc"/>
+            </connections>
+        </panGestureRecognizer>
+    </objects>
+</document>
