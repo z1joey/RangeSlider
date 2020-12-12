@@ -26,7 +26,7 @@ class ViewController: UIViewController, RangeSliderDelegate {
         thumb2.backgroundColor = .black
         thumb2.layer.cornerRadius = 22
 
-        rangeSlider.maximumValue = 5
+        rangeSlider.maximumValue = 1000
         rangeSlider.minimumValue = 1
         rangeSlider.leftThumb = thumb1
         rangeSlider.rightThumb = thumb2

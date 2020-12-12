@@ -36,6 +36,7 @@ public class RangeSlider: UIView {
             updateLeftThumbOrigin()
             updateRightThumbOrigin()
             addLeftThumbPanGesture()
+            updateTrackHighlightViewFrame()
         }
     }
     var rightThumb: UIView = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20)) {
@@ -49,6 +50,7 @@ public class RangeSlider: UIView {
             updateRightThumbOrigin()
             updateLeftThumbOrigin()
             addRightThumbPanGesture()
+            updateTrackHighlightViewFrame()
         }
     }
 
@@ -138,9 +140,10 @@ public class RangeSlider: UIView {
         switch gesture.state {
         case .began:
             leftThumbMaxX = leftThumb.frame.maxX
+            print(leftThumbMaxX)
             delegate?.rangeSliderDidBeganUpdatingValues(self)
         case .changed:
-            leftValue = Double((leftThumbMaxX + translation.x)/safeWidth) * gapBetweenMaxAndMin
+            leftValue = Double((leftThumbMaxX - leftThumb.frame.width + translation.x)/safeWidth) * gapBetweenMaxAndMin
             delegate?.rangeSliderIsUpdatingValues(self)
         case .cancelled, .ended:
             leftThumbMaxX = leftThumb.frame.maxX
@@ -196,8 +199,8 @@ private extension RangeSlider {
 
     func updateLeftThumbOrigin() {
         let percentage = CGFloat((leftValue - minimumValue) / gapBetweenMaxAndMin)
-        var targetX = leftThumb.frame.width + (safeWidth * percentage)
-
+        var targetX = safeWidth * percentage + leftThumb.frame.width
+        //print("\(percentage): \(targetX)")
         if targetX > rightThumb.frame.minX {
             targetX = rightThumb.frame.minX
         }
