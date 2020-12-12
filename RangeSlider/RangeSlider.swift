@@ -20,13 +20,44 @@ public class RangeSlider: UIView {
 
     public var trackViewHeight: CGFloat = 10 {
         didSet {
-            updateTrackView()
-            updateTrackHighlightView()
+            updateTrackViewFrame()
+            updateTrackHighlightViewFrame()
         }
     }
 
-    var leftThumb: UIView = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
-    var rightThumb: UIView = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
+    var leftThumb: UIView = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20)) {
+        willSet {
+            leftThumb.removeFromSuperview()
+            leftPanGesture?.removeTarget(self, action: #selector(handleLeftThumbPan(_:)))
+            leftPanGesture = nil
+        }
+        didSet {
+            addSubview(leftThumb)
+            updateLeftThumbOrigin()
+            updateRightThumbOrigin()
+            addLeftThumbPanGesture()
+        }
+    }
+    var rightThumb: UIView = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20)) {
+        willSet {
+            rightThumb.removeFromSuperview()
+            rightPanGesture?.removeTarget(self, action: #selector(handleRightThumbPan(_:)))
+            rightPanGesture = nil
+        }
+        didSet {
+            addSubview(rightThumb)
+            updateRightThumbOrigin()
+            updateLeftThumbOrigin()
+            addRightThumbPanGesture()
+        }
+    }
+
+    var safeWidth: CGFloat {
+        return frame.width - leftThumb.frame.width - rightThumb.frame.width
+    }
+
+    private var leftPanGesture: UIPanGestureRecognizer?
+    private var rightPanGesture: UIPanGestureRecognizer?
 
     public var trackTintColor: UIColor = UIColor.white.withAlphaComponent(0.4)
     public var trackHighlightTintColor: UIColor = .white
@@ -47,8 +78,8 @@ public class RangeSlider: UIView {
                 leftValue = minimumValue
             }
 
-            updateLeftThumb()
-            updateTrackHighlightView()
+            updateLeftThumbOrigin()
+            updateTrackHighlightViewFrame()
         }
     }
     public var rightValue: Double = 1.0 {
@@ -59,8 +90,8 @@ public class RangeSlider: UIView {
                 rightValue = maximumValue
             }
 
-            updateRightThumb()
-            updateTrackHighlightView()
+            updateRightThumbOrigin()
+            updateTrackHighlightViewFrame()
         }
     }
 
@@ -79,17 +110,20 @@ public class RangeSlider: UIView {
     private func commonInit() {
         backgroundColor = .clear
         setupTrackView()
-        setupThumbs()
-        setupTrackHighlightView()
-        setupPanGestures()
+        addSubview(leftThumb)
+        addSubview(rightThumb)
+        addTrackHighlightView()
+        addLeftThumbPanGesture()
+        addRightThumbPanGesture()
     }
 
-    private func setupPanGestures() {
-        let leftPanGesture = UIPanGestureRecognizer(target: self, action: #selector(handleLeftThumbPan(_:)))
-        let rightPanGesture = UIPanGestureRecognizer(target: self, action: #selector(handleRightThumbPan(_:)))
-
-        leftThumb.addGestureRecognizer(leftPanGesture)
-        rightThumb.addGestureRecognizer(rightPanGesture)
+    private func addLeftThumbPanGesture() {
+        leftPanGesture = UIPanGestureRecognizer(target: self, action: #selector(handleLeftThumbPan(_:)))
+        leftThumb.addGestureRecognizer(leftPanGesture!)
+    }
+    private func addRightThumbPanGesture() {
+        rightPanGesture = UIPanGestureRecognizer(target: self, action: #selector(handleRightThumbPan(_:)))
+        rightThumb.addGestureRecognizer(rightPanGesture!)
     }
 
     private var leftThumbMaxX: CGFloat = 0
@@ -102,10 +136,11 @@ public class RangeSlider: UIView {
             leftThumbMaxX = leftThumb.frame.maxX
             delegate?.rangeSliderDidBeganUpdatingValues(self)
         case .changed:
-            let widthWithoutThumbs = frame.width - leftThumb.frame.width - rightThumb.frame.width
-            leftValue = Double((leftThumbMaxX + translation.x)/widthWithoutThumbs) * maximumValue
+            print(translation.x)
+            leftValue = Double((leftThumbMaxX + translation.x)/safeWidth) * maximumValue
             delegate?.rangeSliderIsUpdatingValues(self)
         case .cancelled, .ended:
+            leftThumbMaxX = leftThumb.frame.maxX
             gesture.setTranslation(.zero, in: self)
             delegate?.rangeSliderDidEndUpdatingValues(self)
         default:
@@ -123,11 +158,11 @@ public class RangeSlider: UIView {
             rightThumbMinX = rightThumb.frame.minX
             delegate?.rangeSliderDidBeganUpdatingValues(self)
         case .changed:
-            let widthWithoutThumbs = frame.width - leftThumb.frame.width - rightThumb.frame.width
-            rightValue = Double((rightThumbMinX + translation.x)/widthWithoutThumbs) * maximumValue
+            print(translation.x)
+            rightValue = Double((rightThumbMinX + translation.x)/safeWidth) * maximumValue
             delegate?.rangeSliderIsUpdatingValues(self)
         case .cancelled, .ended:
-            //rightThumbMinX = rightThumb.frame.minX
+            rightThumbMinX = rightThumb.frame.minX
             gesture.setTranslation(.zero, in: self)
             delegate?.rangeSliderDidEndUpdatingValues(self)
         default:
@@ -138,48 +173,50 @@ public class RangeSlider: UIView {
 
 private extension RangeSlider {
     func setupTrackView() {
-        updateTrackView()
+        updateTrackViewFrame()
         trackView.backgroundColor = trackTintColor
         addSubview(trackView)
     }
 
-    func setupThumbs() {
-        leftValue = minimumValue
-        leftThumb.layer.cornerRadius = 10
-        leftThumb.backgroundColor = UIColor.black.withAlphaComponent(0.4)
-        addSubview(leftThumb)
-
-        rightValue = maximumValue
-        rightThumb.layer.cornerRadius = 10
-        rightThumb.backgroundColor = UIColor.black.withAlphaComponent(0.4)
-        addSubview(rightThumb)
-    }
-
-    func setupTrackHighlightView() {
-        updateTrackHighlightView()
+    func addTrackHighlightView() {
+        updateTrackHighlightViewFrame()
         trackHighlightView.backgroundColor = trackHighlightTintColor
         trackView.addSubview(trackHighlightView)
     }
 
-    func updateTrackView() {
+    func updateTrackViewFrame() {
         trackView.frame = CGRect(x: 0, y: (frame.height/2 - trackViewHeight/2), width: frame.width, height: trackViewHeight)
     }
 
-    func updateTrackHighlightView() {
+    func updateTrackHighlightViewFrame() {
         trackHighlightView.frame = CGRect(x: leftThumb.center.x, y: 0, width: rightThumb.center.x - leftThumb.center.x, height: trackViewHeight)
     }
 
-    func updateLeftThumb() {
-        let widthWithoutThumbs = frame.width - leftThumb.frame.width - rightThumb.frame.width
-        let x = widthWithoutThumbs * CGFloat(leftValue/maximumValue)
-        let y = frame.height/2 - leftThumb.frame.height/2
-        leftThumb.frame.origin = CGPoint(x: x, y: y)
+    func updateLeftThumbOrigin() {
+        let percentage = CGFloat(leftValue / maximumValue)
+        var targetX = leftThumb.frame.width + (safeWidth * percentage)
+
+        if targetX > rightThumb.frame.minX {
+            targetX = rightThumb.frame.minX
+        }
+
+        let leftThumbX = targetX - leftThumb.frame.width
+        let leftThumbY = frame.height/2 - leftThumb.frame.height/2
+
+        leftThumb.frame.origin = CGPoint(x: leftThumbX, y: leftThumbY)
     }
 
-    func updateRightThumb() {
-        let widthWithoutThumbs = frame.width - leftThumb.frame.width - rightThumb.frame.width
-        let x = leftThumb.frame.width + widthWithoutThumbs * CGFloat(rightValue/maximumValue)
-        let y = frame.height/2 - rightThumb.frame.height/2
-        rightThumb.frame.origin = CGPoint(x: x, y: y)
+    func updateRightThumbOrigin() {
+        let percentage = CGFloat(rightValue / maximumValue)
+        var targetX = safeWidth * percentage + leftThumb.frame.width
+
+        if targetX < leftThumb.frame.maxX {
+            targetX = leftThumb.frame.maxX
+        }
+
+        let rightThumbX = targetX
+        let rightThumbY = frame.height/2 - leftThumb.frame.height/2
+
+        rightThumb.frame.origin = CGPoint(x: rightThumbX, y: rightThumbY)
     }
 }

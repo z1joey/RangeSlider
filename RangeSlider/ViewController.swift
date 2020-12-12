@@ -16,8 +16,20 @@ class ViewController: UIViewController, RangeSliderDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        let thumb1 = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 44, height: 44)))
+        thumb1.alpha = 0.5
+        thumb1.backgroundColor = .black
+        thumb1.layer.cornerRadius = 22
+
+        let thumb2 = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 44, height: 44)))
+        thumb2.alpha = 0.5
+        thumb2.backgroundColor = .black
+        thumb2.layer.cornerRadius = 22
+
         rangeSlider.maximumValue = 100
-        rangeSlider.minimumValue = 0
+        rangeSlider.minimumValue = 1
+        rangeSlider.leftThumb = thumb1
+        rangeSlider.rightThumb = thumb2
         rangeSlider.delegate = self
     }
 
