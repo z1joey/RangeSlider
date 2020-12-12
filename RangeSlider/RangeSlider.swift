@@ -68,6 +68,9 @@ public class RangeSlider: UIView {
     public var minimumValue: Double = 0.0 {
         didSet { leftValue = minimumValue }
     }
+    private var gapBetweenMaxAndMin: Double {
+        return maximumValue - minimumValue
+    }
 
     // Better to set rightValue first
     public var leftValue: Double = 0.0 {
@@ -82,6 +85,7 @@ public class RangeSlider: UIView {
             updateTrackHighlightViewFrame()
         }
     }
+    
     public var rightValue: Double = 1.0 {
         didSet {
             if rightValue < leftValue {
@@ -109,7 +113,7 @@ public class RangeSlider: UIView {
 
     private func commonInit() {
         backgroundColor = .clear
-        setupTrackView()
+        addTrackView()
         addSubview(leftThumb)
         addSubview(rightThumb)
         addTrackHighlightView()
@@ -136,8 +140,7 @@ public class RangeSlider: UIView {
             leftThumbMaxX = leftThumb.frame.maxX
             delegate?.rangeSliderDidBeganUpdatingValues(self)
         case .changed:
-            print(translation.x)
-            leftValue = Double((leftThumbMaxX + translation.x)/safeWidth) * maximumValue
+            leftValue = Double((leftThumbMaxX + translation.x)/safeWidth) * gapBetweenMaxAndMin
             delegate?.rangeSliderIsUpdatingValues(self)
         case .cancelled, .ended:
             leftThumbMaxX = leftThumb.frame.maxX
@@ -158,8 +161,7 @@ public class RangeSlider: UIView {
             rightThumbMinX = rightThumb.frame.minX
             delegate?.rangeSliderDidBeganUpdatingValues(self)
         case .changed:
-            print(translation.x)
-            rightValue = Double((rightThumbMinX + translation.x)/safeWidth) * maximumValue
+            rightValue = Double((rightThumbMinX - leftThumb.frame.width + translation.x)/safeWidth) * gapBetweenMaxAndMin
             delegate?.rangeSliderIsUpdatingValues(self)
         case .cancelled, .ended:
             rightThumbMinX = rightThumb.frame.minX
@@ -172,7 +174,7 @@ public class RangeSlider: UIView {
 }
 
 private extension RangeSlider {
-    func setupTrackView() {
+    func addTrackView() {
         updateTrackViewFrame()
         trackView.backgroundColor = trackTintColor
         addSubview(trackView)
@@ -193,7 +195,7 @@ private extension RangeSlider {
     }
 
     func updateLeftThumbOrigin() {
-        let percentage = CGFloat(leftValue / maximumValue)
+        let percentage = CGFloat((leftValue - minimumValue) / gapBetweenMaxAndMin)
         var targetX = leftThumb.frame.width + (safeWidth * percentage)
 
         if targetX > rightThumb.frame.minX {
@@ -207,7 +209,7 @@ private extension RangeSlider {
     }
 
     func updateRightThumbOrigin() {
-        let percentage = CGFloat(rightValue / maximumValue)
+        let percentage = CGFloat((rightValue - minimumValue) / gapBetweenMaxAndMin)
         var targetX = safeWidth * percentage + leftThumb.frame.width
 
         if targetX < leftThumb.frame.maxX {
