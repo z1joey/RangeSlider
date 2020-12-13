@@ -131,12 +131,11 @@ public class RangeSlider: UIView {
     private func addThumbs() {
         leftThumb.layer.cornerRadius = leftThumb.frame.width/2
         leftThumb.backgroundColor = .white
-        leftThumb.applyShadowWithCornerRadius(color: .black, opacity: 0.4, radius: leftThumb.frame.height/2, edge: .All, shadowSpace: 2)
+        leftThumb.applyShadowWithCornerRadius(color: .black, opacity: 0.2, radius: leftThumb.frame.height/2, edge: .All, shadowSpace: 1)
 
         rightThumb.layer.cornerRadius = leftThumb.frame.width/2
         rightThumb.backgroundColor = .white
-        rightThumb.applyShadowWithCornerRadius(color: .black, opacity: 0.4, radius: leftThumb.frame.height/2, edge: .All, shadowSpace: 2)
-
+        rightThumb.applyShadowWithCornerRadius(color: .black, opacity: 0.2, radius: leftThumb.frame.height/2, edge: .All, shadowSpace: 1)
         addSubview(leftThumb)
         addSubview(rightThumb)
 
@@ -153,43 +152,34 @@ public class RangeSlider: UIView {
         rightThumb.addGestureRecognizer(rightPanGesture!)
     }
 
-    private var leftThumbMaxX: CGFloat = 0
-
     @objc func handleLeftThumbPan(_ gesture: UIPanGestureRecognizer) {
         let translation = gesture.translation(in: self)
 
         switch gesture.state {
         case .began:
-            leftThumbMaxX = leftThumb.frame.maxX
-            print(leftThumbMaxX)
             delegate?.rangeSliderDidBeganUpdatingValues(self)
         case .changed:
-            leftValue = Double((leftThumbMaxX - leftThumb.frame.width + translation.x)/gapBetweenThumbs) * gapBetweenMaxAndMin
+            leftValue += Double(translation.x/gapBetweenThumbs) * gapBetweenMaxAndMin
+            gesture.setTranslation(.zero, in: self)
             delegate?.rangeSliderIsUpdatingValues(self)
         case .cancelled, .ended:
-            leftThumbMaxX = leftThumb.frame.maxX
-            gesture.setTranslation(.zero, in: self)
             delegate?.rangeSliderDidEndUpdatingValues(self)
         default:
             break
         }
     }
 
-    private var rightThumbMinX: CGFloat = 0
-
     @objc func handleRightThumbPan(_ gesture: UIPanGestureRecognizer) {
         let translation = gesture.translation(in: self)
 
         switch gesture.state {
         case .began:
-            rightThumbMinX = rightThumb.frame.minX
             delegate?.rangeSliderDidBeganUpdatingValues(self)
         case .changed:
-            rightValue = Double((rightThumbMinX - leftThumb.frame.width + translation.x)/gapBetweenThumbs) * gapBetweenMaxAndMin
+            rightValue += Double(translation.x/gapBetweenThumbs) * gapBetweenMaxAndMin
+            gesture.setTranslation(.zero, in: self)
             delegate?.rangeSliderIsUpdatingValues(self)
         case .cancelled, .ended:
-            rightThumbMinX = rightThumb.frame.minX
-            gesture.setTranslation(.zero, in: self)
             delegate?.rangeSliderDidEndUpdatingValues(self)
         default:
             break
@@ -222,7 +212,6 @@ private extension RangeSlider {
     func updateLeftThumbOrigin() {
         let percentage = CGFloat((leftValue - minimumValue) / gapBetweenMaxAndMin)
         var targetX = gapBetweenThumbs * percentage + leftThumb.frame.width
-        //print("\(percentage): \(targetX)")
         if targetX > rightThumb.frame.minX {
             targetX = rightThumb.frame.minX
         }
