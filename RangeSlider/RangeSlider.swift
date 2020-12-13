@@ -18,14 +18,14 @@ public class RangeSlider: UIView {
     private var trackView: UIView = UIView(frame: .zero)
     private var trackHighlightView: UIView = UIView(frame: .zero)
 
-    public var trackViewHeight: CGFloat = 10 {
+    public var trackViewHeight: CGFloat = 4 {
         didSet {
             updateTrackViewFrame()
             updateTrackHighlightViewFrame()
         }
     }
 
-    var leftThumb: UIView = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20)) {
+    var leftThumb: UIView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: 30)) {
         willSet {
             leftThumb.removeFromSuperview()
             leftPanGesture?.removeTarget(self, action: #selector(handleLeftThumbPan(_:)))
@@ -39,7 +39,7 @@ public class RangeSlider: UIView {
             updateTrackHighlightViewFrame()
         }
     }
-    var rightThumb: UIView = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20)) {
+    var rightThumb: UIView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: 30)) {
         willSet {
             rightThumb.removeFromSuperview()
             rightPanGesture?.removeTarget(self, action: #selector(handleRightThumbPan(_:)))
@@ -118,18 +118,22 @@ public class RangeSlider: UIView {
         addTrackView()
         addThumbs()
         addTrackHighlightView()
-        addLeftThumbPanGesture()
-        addRightThumbPanGesture()
     }
 
     private func addThumbs() {
-        leftThumb.backgroundColor = .black
-        leftThumb.alpha = 0.5
-        rightThumb.backgroundColor = .black
-        rightThumb.alpha = 0.5
+        leftThumb.layer.cornerRadius = leftThumb.frame.width/2
+        leftThumb.backgroundColor = .white
+        leftThumb.applyShadowWithCornerRadius(color: .black, opacity: 0.4, radius: leftThumb.frame.height/2, edge: .All, shadowSpace: 2)
+
+        rightThumb.layer.cornerRadius = leftThumb.frame.width/2
+        rightThumb.backgroundColor = .white
+        rightThumb.applyShadowWithCornerRadius(color: .black, opacity: 0.4, radius: leftThumb.frame.height/2, edge: .All, shadowSpace: 2)
 
         addSubview(leftThumb)
         addSubview(rightThumb)
+
+        addLeftThumbPanGesture()
+        addRightThumbPanGesture()
     }
 
     private func addLeftThumbPanGesture() {
@@ -232,5 +236,63 @@ private extension RangeSlider {
         let rightThumbY = frame.height/2 - leftThumb.frame.height/2
 
         rightThumb.frame.origin = CGPoint(x: rightThumbX, y: rightThumbY)
+    }
+}
+
+private extension UIView {
+    func applyShadowWithCornerRadius(color:UIColor, opacity:Float, radius: CGFloat, edge:AIEdge, shadowSpace:CGFloat)    {
+
+        var sizeOffset:CGSize = CGSize.zero
+        switch edge {
+        case .Top:
+            sizeOffset = CGSize(width: 0, height: -shadowSpace)
+        case .Left:
+            sizeOffset = CGSize(width: -shadowSpace, height: 0)
+        case .Bottom:
+            sizeOffset = CGSize(width: 0, height: shadowSpace)
+        case .Right:
+            sizeOffset = CGSize(width: shadowSpace, height: 0)
+
+
+        case .Top_Left:
+            sizeOffset = CGSize(width: -shadowSpace, height: -shadowSpace)
+        case .Top_Right:
+            sizeOffset = CGSize(width: shadowSpace, height: -shadowSpace)
+        case .Bottom_Left:
+            sizeOffset = CGSize(width: -shadowSpace, height: shadowSpace)
+        case .Bottom_Right:
+            sizeOffset = CGSize(width: shadowSpace, height: shadowSpace)
+
+
+        case .All:
+            sizeOffset = CGSize(width: 0, height: 0)
+        case .None:
+            sizeOffset = CGSize.zero
+        }
+
+        self.layer.cornerRadius = self.frame.size.height / 2
+        self.layer.masksToBounds = true;
+
+        self.layer.shadowColor = color.cgColor
+        self.layer.shadowOpacity = opacity
+        self.layer.shadowOffset = sizeOffset
+        self.layer.shadowRadius = radius
+        self.layer.masksToBounds = false
+
+        self.layer.shadowPath = UIBezierPath(roundedRect:self.bounds, cornerRadius:self.layer.cornerRadius).cgPath
+    }
+
+    enum AIEdge:Int {
+        case
+        Top,
+        Left,
+        Bottom,
+        Right,
+        Top_Left,
+        Top_Right,
+        Bottom_Left,
+        Bottom_Right,
+        All,
+        None
     }
 }
