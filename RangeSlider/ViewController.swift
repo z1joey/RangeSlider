@@ -9,7 +9,8 @@
 import UIKit
 
 class ViewController: UIViewController, RangeSliderDelegate {
-    @IBOutlet weak var rangeSlider: RangeSlider!
+    @IBOutlet weak var rangeSlider1: RangeSlider!
+    @IBOutlet weak var rangeSlider2: RangeSlider!
     @IBOutlet weak var leftLabel: UILabel!
     @IBOutlet weak var rightLabel: UILabel!
 
@@ -17,9 +18,13 @@ class ViewController: UIViewController, RangeSliderDelegate {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
 
-        rangeSlider.maximumValue = 1000
-        rangeSlider.minimumValue = 1
-        rangeSlider.delegate = self
+        rangeSlider1.maximumValue = 5
+        rangeSlider1.minimumValue = 1
+        rangeSlider1.delegate = self
+
+        rangeSlider2.maximumValue = 1000
+        rangeSlider2.minimumValue = 1
+        rangeSlider2.delegate = self
     }
 
     func rangeSliderIsUpdatingValues(_ slider: RangeSlider) {

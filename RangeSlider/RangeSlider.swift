@@ -87,7 +87,7 @@ public class RangeSlider: UIView {
             updateTrackHighlightViewFrame()
         }
     }
-    
+
     public var rightValue: Double = 1.0 {
         didSet {
             if rightValue < leftValue {
@@ -111,6 +111,14 @@ public class RangeSlider: UIView {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         commonInit()
+    }
+
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        updateTrackViewFrame()
+        updateLeftThumbOrigin()
+        updateRightThumbOrigin()
+        updateTrackHighlightViewFrame()
     }
 
     private func commonInit() {
@@ -193,6 +201,7 @@ private extension RangeSlider {
     func addTrackView() {
         updateTrackViewFrame()
         trackView.backgroundColor = trackTintColor
+        trackView.layer.cornerRadius = trackView.frame.height/2
         addSubview(trackView)
     }
 
