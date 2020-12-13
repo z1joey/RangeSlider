@@ -54,10 +54,6 @@ public class RangeSlider: UIView {
         }
     }
 
-    var safeWidth: CGFloat {
-        return frame.width - leftThumb.frame.width - rightThumb.frame.width
-    }
-
     private var leftPanGesture: UIPanGestureRecognizer?
     private var rightPanGesture: UIPanGestureRecognizer?
 
@@ -70,8 +66,12 @@ public class RangeSlider: UIView {
     public var minimumValue: Double = 0.0 {
         didSet { leftValue = minimumValue }
     }
+
     private var gapBetweenMaxAndMin: Double {
         return maximumValue - minimumValue
+    }
+    private var gapBetweenThumbs: CGFloat {
+        return frame.width - leftThumb.frame.width - rightThumb.frame.width
     }
 
     // Better to set rightValue first
@@ -116,11 +116,20 @@ public class RangeSlider: UIView {
     private func commonInit() {
         backgroundColor = .clear
         addTrackView()
-        addSubview(leftThumb)
-        addSubview(rightThumb)
+        addThumbs()
         addTrackHighlightView()
         addLeftThumbPanGesture()
         addRightThumbPanGesture()
+    }
+
+    private func addThumbs() {
+        leftThumb.backgroundColor = .black
+        leftThumb.alpha = 0.5
+        rightThumb.backgroundColor = .black
+        rightThumb.alpha = 0.5
+
+        addSubview(leftThumb)
+        addSubview(rightThumb)
     }
 
     private func addLeftThumbPanGesture() {
@@ -143,7 +152,7 @@ public class RangeSlider: UIView {
             print(leftThumbMaxX)
             delegate?.rangeSliderDidBeganUpdatingValues(self)
         case .changed:
-            leftValue = Double((leftThumbMaxX - leftThumb.frame.width + translation.x)/safeWidth) * gapBetweenMaxAndMin
+            leftValue = Double((leftThumbMaxX - leftThumb.frame.width + translation.x)/gapBetweenThumbs) * gapBetweenMaxAndMin
             delegate?.rangeSliderIsUpdatingValues(self)
         case .cancelled, .ended:
             leftThumbMaxX = leftThumb.frame.maxX
@@ -164,7 +173,7 @@ public class RangeSlider: UIView {
             rightThumbMinX = rightThumb.frame.minX
             delegate?.rangeSliderDidBeganUpdatingValues(self)
         case .changed:
-            rightValue = Double((rightThumbMinX - leftThumb.frame.width + translation.x)/safeWidth) * gapBetweenMaxAndMin
+            rightValue = Double((rightThumbMinX - leftThumb.frame.width + translation.x)/gapBetweenThumbs) * gapBetweenMaxAndMin
             delegate?.rangeSliderIsUpdatingValues(self)
         case .cancelled, .ended:
             rightThumbMinX = rightThumb.frame.minX
@@ -199,7 +208,7 @@ private extension RangeSlider {
 
     func updateLeftThumbOrigin() {
         let percentage = CGFloat((leftValue - minimumValue) / gapBetweenMaxAndMin)
-        var targetX = safeWidth * percentage + leftThumb.frame.width
+        var targetX = gapBetweenThumbs * percentage + leftThumb.frame.width
         //print("\(percentage): \(targetX)")
         if targetX > rightThumb.frame.minX {
             targetX = rightThumb.frame.minX
@@ -213,7 +222,7 @@ private extension RangeSlider {
 
     func updateRightThumbOrigin() {
         let percentage = CGFloat((rightValue - minimumValue) / gapBetweenMaxAndMin)
-        var targetX = safeWidth * percentage + leftThumb.frame.width
+        var targetX = gapBetweenThumbs * percentage + leftThumb.frame.width
 
         if targetX < leftThumb.frame.maxX {
             targetX = leftThumb.frame.maxX
